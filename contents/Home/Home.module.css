@@ -1,0 +1,22 @@
+.container {
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card {
+  width: 600px;
+}
+
+.title {
+}
+
+.titleDetail {
+}
+
+.inputDomain {
+  padding: 10px;
+  width: 90%;
+}
