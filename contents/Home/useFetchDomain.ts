@@ -4,16 +4,18 @@ import api from "../../utils/api";
 type Domain = {
   status: string;
   fqdn: string;
+  suggestions: Array<string>;
 };
 
 const useFetchDomain = () => {
-  const [domain, setDomain] = useState<Domain>();
+  const [domain, setDomain] = useState<Domain | null>();
   const [domainLoading, setDomainLoading] = useState(false);
   const [domainError, setDomainError] = useState(null);
 
   const getDomain = useCallback((domainSearched: string) => {
     setDomainLoading(true);
     setDomainError(null);
+    setDomain(null);
 
     api
       .get(`/registrobr/v1/${domainSearched}`)
