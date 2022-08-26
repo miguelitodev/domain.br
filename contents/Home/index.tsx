@@ -2,8 +2,44 @@ import { useState } from "react";
 import useFetchDomain from "./useFetchDomain";
 
 export default function Home() {
-  const [domainSearched, setDomainSearched] = useState("");
-  const { domain, domainError, domainLoading, getDomain } = useFetchDomain();
+  const [domainSearched, setDomainSearched] = useState<string>("");
+  const { domain, domainError, domainLoading, setDomainError, getDomain } =
+    useFetchDomain();
+
+  function verifyDomain() {
+    if (domainSearched.length < 2 || domainSearched.length > 26) {
+      setDomainError({
+        message: "O domínio precisa ter no mínimo 2 e no máximo 26 caracteres.",
+      });
+      return;
+    }
+
+    if (domainSearched.match(/([^-a-zàáâãéêíóôõúüç0-9])/)) {
+      setDomainError({
+        message:
+          "O domínio não pode conter letras maiusculas, espaços e caracteres especiais. Por favor tente novamente!",
+      });
+      return;
+    }
+
+    if (Number(domainSearched)) {
+      setDomainError({
+        message:
+          "O domínio não pode conter apenas números. Por favor tente novamente!",
+      });
+      return;
+    }
+
+    if (domainSearched.match(/(^[-]|[-]$)/)) {
+      setDomainError({
+        message:
+          "O domínio não pode conter hífen no inicio nem no final. Por favor tente novamente!",
+      });
+      return;
+    }
+
+    getDomain(domainSearched);
+  }
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -26,24 +62,24 @@ export default function Home() {
               setDomainSearched(target.value.split(".")[0]);
             }}
             onKeyUp={(event: React.KeyboardEvent<HTMLElement>) => {
-              event.key === "Enter" && getDomain(domainSearched);
+              event.key === "Enter" && verifyDomain();
             }}
           />
           <button
             className="border-2 border-green-600 text-green-600 p-3 rounded-md font-bold hover:bg-green-600 hover:text-white transition-colors"
-            onClick={() => getDomain(domainSearched)}
+            onClick={() => domainSearched && verifyDomain()}
           >
             Pesquisar
           </button>
         </div>
 
-        {domainSearched !== "" && domainError && (
+        {domainError && (
           <div className="w-full flex flex-col p-3 my-3 border-l-8 border-red-400 bg-red-100 ">
             <span className="text-red-700 font-bold">
               Vish! deu ruim ai amigão 😱
             </span>
             <span className="text-red-700 font-medium my-1">
-              Tenta novamente, sem caracteres especiais.
+              {domainError.message}
             </span>
             <a
               href="https://github.com/miguelrisquelme/domain.br/issues/new"
@@ -56,7 +92,7 @@ export default function Home() {
           </div>
         )}
 
-        {domainSearched !== "" && domainLoading && !domain && (
+        {domainLoading && !domain && (
           <div
             role="status"
             className="mt-3 w-full flex justify-center items-center"
@@ -119,25 +155,27 @@ export default function Home() {
                 👈
               </span>
             </div>
-            <div className="flex flex-col">
-              <span className="font-normal">
-                Fica triste não 🙌, separamos algumas opções disponíveis para
-                você!
-              </span>
-              <div className="flex flex-row flex-wrap mt-3">
-                {domain.suggestions.map((suggestion, index) => (
-                  <a
-                    key={index}
-                    target="_blank"
-                    rel="noreferrer"
-                    href={`https://registro.br/busca-dominio/?fqdn=${domainSearched}.${suggestion}`}
-                    className="rounded-md px-2 text-green-900 font-bold border-green-500 border-2 hover:bg-green-500 transition-colors ml-1 my-1"
-                  >
-                    {suggestion}
-                  </a>
-                ))}
+            {domain.suggestions && (
+              <div className="flex flex-col">
+                <span className="font-normal">
+                  Fica triste não 🙌, separamos algumas opções disponíveis para
+                  você!
+                </span>
+                <div className="flex flex-row flex-wrap mt-3">
+                  {domain.suggestions.map((suggestion, index) => (
+                    <a
+                      key={index}
+                      target="_blank"
+                      rel="noreferrer"
+                      href={`https://registro.br/busca-dominio/?fqdn=${domainSearched}.${suggestion}`}
+                      className="rounded-md px-2 text-green-900 font-bold border-green-500 border-2 hover:bg-green-500 transition-colors ml-1 my-1"
+                    >
+                      {suggestion}
+                    </a>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </>
         )}
       </div>

@@ -7,20 +7,24 @@ type Domain = {
   suggestions: Array<string>;
 };
 
+type DomainError = {
+  message: string;
+};
+
 const useFetchDomain = () => {
   const [domain, setDomain] = useState<Domain | null>();
   const [domainLoading, setDomainLoading] = useState(false);
-  const [domainError, setDomainError] = useState(null);
+  const [domainError, setDomainError] = useState<DomainError | null>();
 
-  const getDomain = useCallback((domainSearched: string) => {
+  const getDomain = useCallback(async (domainSearched: string) => {
     setDomainLoading(true);
     setDomainError(null);
     setDomain(null);
 
-    api
+    await api
       .get(`/registrobr/v1/${domainSearched}`)
       .then((response) => setDomain(response.data))
-      .catch((error) => setDomainError(error));
+      .catch((error) => console.log(error));
 
     setDomainLoading(false);
   }, []);
@@ -29,6 +33,7 @@ const useFetchDomain = () => {
     domain,
     domainLoading,
     domainError,
+    setDomainError,
     getDomain,
   };
 };
