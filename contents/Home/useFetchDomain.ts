@@ -8,7 +8,7 @@ type Domain = {
 };
 
 type DomainError = {
-  message: string;
+  message: string | null;
 };
 
 const useFetchDomain = () => {

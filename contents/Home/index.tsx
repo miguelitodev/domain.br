@@ -1,45 +1,16 @@
 import { useState } from "react";
 import useFetchDomain from "./useFetchDomain";
+import { domainVerify } from "../../utils/domainVerify";
 
 export default function Home() {
   const [domainSearched, setDomainSearched] = useState<string>("");
   const { domain, domainError, domainLoading, setDomainError, getDomain } =
     useFetchDomain();
 
-  function verifyDomain() {
-    if (domainSearched.length < 2 || domainSearched.length > 26) {
-      setDomainError({
-        message: "O domínio precisa ter no mínimo 2 e no máximo 26 caracteres.",
-      });
-      return;
-    }
-
-    if (domainSearched.match(/([^-a-zàáâãéêíóôõúüç0-9])/)) {
-      setDomainError({
-        message:
-          "O domínio não pode conter letras maiusculas, espaços e caracteres especiais. Por favor tente novamente!",
-      });
-      return;
-    }
-
-    if (Number(domainSearched)) {
-      setDomainError({
-        message:
-          "O domínio não pode conter apenas números. Por favor tente novamente!",
-      });
-      return;
-    }
-
-    if (domainSearched.match(/(^[-]|[-]$)/)) {
-      setDomainError({
-        message:
-          "O domínio não pode conter hífen no inicio nem no final. Por favor tente novamente!",
-      });
-      return;
-    }
-
-    getDomain(domainSearched);
-  }
+  const searchDomain = () => {
+    const { message, result } = domainVerify(domainSearched);
+    result ? getDomain(domainSearched) : setDomainError({ message });
+  };
 
   return (
     <div className="flex justify-center items-center h-screen">
@@ -62,12 +33,12 @@ export default function Home() {
               setDomainSearched(target.value.split(".")[0]);
             }}
             onKeyUp={(event: React.KeyboardEvent<HTMLElement>) => {
-              event.key === "Enter" && verifyDomain();
+              event.key === "Enter" && searchDomain();
             }}
           />
           <button
             className="border-2 border-green-600 text-green-600 p-3 rounded-md font-bold hover:bg-green-600 hover:text-white transition-colors"
-            onClick={() => domainSearched && verifyDomain()}
+            onClick={() => domainSearched && searchDomain()}
           >
             Pesquisar
           </button>
