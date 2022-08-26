@@ -24,7 +24,14 @@ const useFetchDomain = () => {
     await api
       .get(`/registrobr/v1/${domainSearched}`)
       .then((response) => setDomain(response.data))
-      .catch((error) => console.log(error));
+      .catch(
+        (error) =>
+          error &&
+          setDomainError({
+            message:
+              "Ocorreu um erro durante a requisição dos seus dados ao servidor. Por favor tente novamente!",
+          })
+      );
 
     setDomainLoading(false);
   }, []);
