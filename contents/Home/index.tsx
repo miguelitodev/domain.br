@@ -14,7 +14,7 @@ export default function Home() {
 
   return (
     <div className="flex justify-center items-center h-screen">
-      <div className="w-2/6">
+      <div className="w-3/4 md:w-2/4 lg:w-2/6">
         <h1 className="text-5xl font-bold text-gray-600">
           Domínio
           <span className="text-6xl font-extrabold text-green-500">.br</span>
